@@ -27,16 +27,29 @@ class CpEvent:
         acc_sell_deal_vol = self.client.GetHeaderValue(15)  # 누적매도체결수량(체결가방식)
         acc_buy_deal_vol = self.client.GetHeaderValue(16)  # 누적매수체결수량(체결가방식)
         moment_deal_vol = self.client.GetHeaderValue(17)  # 순간체결수량
-        exFlag= self.client.GetHeaderValue(18)  # 시간(초)
-        exp_price_com_flag = self.client.GetHeaderValue(19)  # 예상체결가구분플래그
+        time_sec= self.client.GetHeaderValue(18)  # 시간(초)
+        exFlag = self.client.GetHeaderValue(19)  # 예상체결가구분플래그
         market_diff_flag = self.client.GetHeaderValue(20)  # 장구분플래그
+
+        conn = sqlite3.connect("stock(day).db", isolation_level=None)
+        c = conn.cursor()
+
+        c.execute("CREATE TABLE IF NOT EXISTS " + code +
+                  " (diff real, time integer, cur_price integer, high_price integer, low_price integer"
+                  ", sell_call integer, buy_call integer, acc_vol integer, pred_price integer, deal_state text, acc_sell_deal_vol integer"
+                  ", acc_buy_deal_vol,moment_deal_vol,time_sec integer, exFlag text, market_diff_flag text )")
+        # sql문 실행 - 테이블 생성
+        c.execute(
+            "INSERT OR IGNORE INTO " + code + " VALUES( ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            ((diff,time,cur_price,high_price,low_price,sell_call,buy_call,acc_vol,pred_price,deal_state,acc_sell_deal_vol,acc_buy_deal_vol,moment_deal_vol,time_sec,exFlag,market_diff_flag)))
+
 
         if (exFlag == ord('1')):  # 동시호가 시간 (예상체결)
             print("실시간(예상체결)", code,name,diff,time,cur_price,high_price,low_price,sell_call,buy_call,acc_vol,pred_price,deal_state,acc_sell_deal_vol
-                  ,acc_buy_deal_vol,moment_deal_vol,exp_price_com_flag,market_diff_flag)
+                  ,acc_buy_deal_vol,moment_deal_vol,exFlag,market_diff_flag)
         elif (exFlag == ord('2')):  # 장중(체결)
             print("실시간(장중 체결)", code,name,diff,time,cur_price,high_price,low_price,sell_call,buy_call,acc_vol,pred_price,deal_state,acc_sell_deal_vol
-                  ,acc_buy_deal_vol,moment_deal_vol,exp_price_com_flag,market_diff_flag)
+                  ,acc_buy_deal_vol,moment_deal_vol,exFlag,market_diff_flag)
 
 
 class CpStockCur:
