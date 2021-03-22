@@ -41,72 +41,35 @@ class CpEvent:
 
 
 
-        print(code,name,diff,time,cur_price,high_price,low_price,sell_call,buy_call,acc_vol,cprice,deal_state \
-              ,acc_sell_deal_vol,acc_buy_deal_vol,moment_deal_vol,time_sec, exp_price_com_flag,market_diff_flag)
+        print(code,name,diff,time,cur_price,high_price,low_price,sell_call,buy_call,acc_vol,cprice,deal_state,acc_sell_deal_vol,acc_buy_deal_vol,moment_deal_vol,time_sec, exp_price_com_flag,market_diff_flag)
 
 
 
-class MyWindow(QMainWindow):
-
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("PLUS API TEST")
-        self.setGeometry(300, 300, 300, 150)
-        self.isSB = False
-        self.objCur = []
-
-        btnStart = QPushButton("요청 시작", self)
-        btnStart.move(20, 20)
-        btnStart.clicked.connect(self.btnStart_clicked)
-
-        btnStop = QPushButton("요청 종료", self)
-        btnStop.move(20, 70)
-        btnStop.clicked.connect(self.btnStop_clicked)
-
-        btnExit = QPushButton("종료", self)
-        btnExit.move(20, 120)
-        btnExit.clicked.connect(self.btnExit_clicked)
-
-    def StopSubscribe(self):
-        if self.isSB:
-            cnt = len(self.objCur)
-            for i in range(cnt):
-                self.objCur[i].Unsubscribe()
-            print(cnt, "종목 실시간 해지되었음")
-        self.isSB = False
-
-        self.objCur = []
+isSB = False
+objCur = []
 
 
-
-    def btnStart_clicked(self):
-        self.StopSubscribe();
-
-        # 요청 종목 배열
-        codes = ["A005930","A003540", "A000660", "A005930", "A035420", "A069500", "Q530031"]
-        # 요청 필드 배열 - 종목코드, 시간, 대비부호 대비, 현재가, 거래량, 종목명
-        rqField = [0, 1, 2, 3, 4, 10, 17]  # 요청 필드
-
-
-        cnt = len(codes)
+def StopSubscribe(self):
+    if self.isSB:
+        cnt = len(self.objCur)
         for i in range(cnt):
-            self.objCur.append(CpStockCur())
-            self.objCur[i].Subscribe(codes[i])
+            self.objCur[i].Unsubscribe()
+        print(cnt, "종목 실시간 해지되었음")
+    self.isSB = False
 
-        print("빼기빼기================-")
-        print(cnt, "종목 실시간 현재가 요청 시작")
-        self.isSB = True
-
-    def btnStop_clicked(self):
-        self.StopSubscribe()
-
-    def btnExit_clicked(self):
-        self.StopSubscribe()
-        exit()
+    self.objCur = []
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    myWindow = MyWindow()
-    myWindow.show()
-    app.exec_()
+    self.StopSubscribe();
+
+# 요청 종목 배열
+codes = ["A005930","A003540", "A000660", "A005930", "A035420", "A069500", "Q530031"]
+
+cnt = len(codes)
+for i in range(cnt):
+   objCur.append(CpStockCur())
+   objCur[i].Subscribe(codes[i])
+
+print("빼기빼기================-")
+print(cnt, "종목 실시간 현재가 요청 시작")
+isSB = True
