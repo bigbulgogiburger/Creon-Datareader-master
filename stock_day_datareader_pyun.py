@@ -52,38 +52,42 @@ def ReqeustData(obj):
 
 
 # 연결 여부 체크
-objCpCybos = win32com.client.Dispatch("CpUtil.CpCybos")
-bConnect = objCpCybos.IsConnect
-if (bConnect == 0):
-    print("PLUS가 정상적으로 연결되지 않음. ")
-    exit()
 
-# 일자별 object 구하기
-objStockWeek = win32com.client.Dispatch("DsCbo1.StockWeek")
-code = ["A000660", "A005930", "A035420", "A069500", "Q530031"]
-print(code)
-for codenum in code:
-    codenum = str(codenum)
-    # if(codenum==3):
-    #     codenum = 'A000'+str(codenum)
-    # elif(codenum==4):
-    #     codenum = 'A00'+str(codenum)
-    # elif (codenum == 5):
-    #     codenum = 'A0' + str(codenum)
-    objStockWeek.SetInputValue(0, codenum)  # 종목 코드 - 삼성전자
+class stock_day_collector:
 
-    # 최초 데이터 요청
-    ret = ReqeustData(objStockWeek)
-    if ret == False:
-        exit()
-
-    # 연속 데이터 요청
-    # 예제는 10000000번만 연속 통신 하도록 함.
-    NextCount = 1
-    while objStockWeek.Continue:  # 연속 조회처리
-        NextCount += 1;
-        if (NextCount > 10000000):
-            break
-        ret = ReqeustData(objStockWeek)
-        if ret == False:
+    def run(self,codelist):
+        objCpCybos = win32com.client.Dispatch("CpUtil.CpCybos")
+        bConnect = objCpCybos.IsConnect
+        if (bConnect == 0):
+            print("PLUS가 정상적으로 연결되지 않음. ")
             exit()
+
+        # 일자별 object 구하기
+        objStockWeek = win32com.client.Dispatch("DsCbo1.StockWeek")
+
+        print(codelist)
+        for codenum in codelist:
+            codenum = str(codenum)
+            # if(codenum==3):
+            #     codenum = 'A000'+str(codenum)
+            # elif(codenum==4):
+            #     codenum = 'A00'+str(codenum)
+            # elif (codenum == 5):
+            #     codenum = 'A0' + str(codenum)
+            objStockWeek.SetInputValue(0, codenum)  # 종목 코드 - 삼성전자
+
+            # 최초 데이터 요청
+            ret = ReqeustData(objStockWeek)
+            if ret == False:
+                exit()
+
+            # 연속 데이터 요청
+            # 예제는 10000000번만 연속 통신 하도록 함.
+            NextCount = 1
+            while objStockWeek.Continue:  # 연속 조회처리
+                NextCount += 1;
+                if (NextCount > 10000000):
+                    break
+                ret = ReqeustData(objStockWeek)
+                if ret == False:
+                    exit()
