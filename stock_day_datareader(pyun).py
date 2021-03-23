@@ -64,12 +64,12 @@ code = ["A000660", "A005930", "A035420", "A069500", "Q530031"]
 print(code)
 for codenum in code:
     codenum = str(codenum)
-    if(codenum==3):
-        codenum = 'A000'+str(codenum)
-    elif(codenum==4):
-        codenum = 'A00'+str(codenum)
-    elif (codenum == 5):
-        codenum = 'A0' + str(codenum)
+    # if(codenum==3):
+    #     codenum = 'A000'+str(codenum)
+    # elif(codenum==4):
+    #     codenum = 'A00'+str(codenum)
+    # elif (codenum == 5):
+    #     codenum = 'A0' + str(codenum)
     objStockWeek.SetInputValue(0, codenum)  # 종목 코드 - 삼성전자
 
     # 최초 데이터 요청

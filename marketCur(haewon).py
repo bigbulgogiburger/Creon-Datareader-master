@@ -31,7 +31,7 @@ class CpEvent:
         exFlag = self.client.GetHeaderValue(19)  # 예상체결가구분플래그
         market_diff_flag = self.client.GetHeaderValue(20)  # 장구분플래그
 
-        conn = sqlite3.connect("stock(day).db", isolation_level=None)
+        conn = sqlite3.connect("stock(cur).db", isolation_level=None)
         c = conn.cursor()
 
         c.execute("CREATE TABLE IF NOT EXISTS " + code +
