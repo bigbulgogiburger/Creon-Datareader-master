@@ -40,7 +40,7 @@ class CpEvent:
                   ", acc_buy_deal_vol,moment_deal_vol,time_sec integer, exFlag text, market_diff_flag text )")
         # sql문 실행 - 테이블 생성
         c.execute(
-            "INSERT OR IGNORE INTO " + code + " VALUES( ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            "INSERT OR IGNORE INTO " + code + " VALUES( ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             ((diff,time,cur_price,high_price,low_price,sell_call,buy_call,acc_vol,pred_price,deal_state,acc_sell_deal_vol,acc_buy_deal_vol,moment_deal_vol,time_sec,exFlag,market_diff_flag)))
 
 
