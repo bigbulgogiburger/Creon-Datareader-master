@@ -6,10 +6,12 @@ import win32com.client
 class import_list:
 
 
-    conn = sqlite3.connect("stock_list.db", isolation_level=None)
+    conn = sqlite3.connect("stock_pyun.db", isolation_level=None)
     c = conn.cursor()
+
+
     def run(self):
-        self.c.execute("select code from stock_list")
+        self.c.execute("select code from stock_pyun")
         listCode = self.c.fetchall()
         codes = []
         for i in range(0,len(listCode)):
