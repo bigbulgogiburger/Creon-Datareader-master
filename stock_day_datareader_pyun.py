@@ -1,5 +1,6 @@
 import win32com.client
 import sqlite3
+import datetime
 import pandas as pd
 import numpy as np
 
@@ -10,16 +11,16 @@ def ReqeustData(obj):
     # 통신 결과 확인
     rqStatus = obj.GetDibStatus()
     rqRet = obj.GetDibMsg1()
-    print("통신상태", rqStatus, rqRet)
+
     if rqStatus != 0:
         return False
-
-    conn = sqlite3.connect("stock(day).db", isolation_level=None)
-    c = conn.cursor()
+    ## 현재 받은 리스트 로드하기
+    connn = sqlite3.connect("stock_list_added .db", isolation_level=None)
+    c2 = connn.cursor()
     # DB 연결
     print(obj.GetHeaderValue(0))
-    c.execute("CREATE TABLE IF NOT EXISTS " + obj.GetHeaderValue(0) +
-              " (day date, cur_pr integer,high_pr integer, low_pr integer, clo_pr integer, pr_diff integer, acc_vol integer"
+    c2.execute("CREATE TABLE IF NOT EXISTS " + obj.GetHeaderValue(0) +
+              " (day date primary key, cur_pr integer,high_pr integer, low_pr integer, clo_pr integer, pr_diff integer, acc_vol integer"
               ", for_stor integer, for_stor_diff integer, for perc integer, com_buy_vol integer, oot_cur_pr integer"
               ", oot_high_pr, oot_low_pr, oot_clo_pr, oot_pr_diff, oot_vol)")
     # sql문 실행 - 테이블 생성
@@ -45,10 +46,16 @@ def ReqeustData(obj):
         oot_pr_diff = obj.GetDataValue(18, i)  # 시간외단일가전일대비
         oot_vol = obj.GetDataValue(19, i)  # 시간외단일가거래량
 
-        c.execute("INSERT OR IGNORE INTO "+ obj.GetHeaderValue(0) +" VALUES( ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?)",
+        c2.execute("INSERT OR IGNORE INTO "+ obj.GetHeaderValue(0) +" VALUES( ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?)",
                   ((day,cur_pr,high_pr,low_pr,clo_pr,pr_diff,acc_vol,for_stor,for_stor_diff,for_perc,com_buy_vol,oot_cur_pr,oot_high_pr,oot_low_pr,oot_clo_pr,oot_pr_diff,oot_vol)))
-        print(day,cur_pr,high_pr,low_pr,clo_pr,pr_diff,acc_vol,for_stor,for_stor_diff,for_perc,com_buy_vol,oot_cur_pr,oot_high_pr,oot_low_pr,oot_clo_pr,oot_pr_diff,oot_vol)
+        print(day)
+
     return True
+
+def store_list(obj):
+    conn = sqlite3.connect("stock(day).db", isolation_level=None)
+    c = conn.cursor()
+
 
 
 # 연결 여부 체크
@@ -62,18 +69,16 @@ class stock_day_collector:
             print("PLUS가 정상적으로 연결되지 않음. ")
             exit()
 
+
         # 일자별 object 구하기
         objStockWeek = win32com.client.Dispatch("DsCbo1.StockWeek")
+        ## 현재 받은 리스트 로드하기
+        conn = sqlite3.connect("stock_pyun.db", isolation_level=None)
+        c = conn.cursor()
+        time1 = datetime.datetime.now
 
-        print(codelist)
         for codenum in codelist:
-            codenum = str(codenum)
-            # if(codenum==3):
-            #     codenum = 'A000'+str(codenum)
-            # elif(codenum==4):
-            #     codenum = 'A00'+str(codenum)
-            # elif (codenum == 5):
-            #     codenum = 'A0' + str(codenum)
+
             objStockWeek.SetInputValue(0, codenum)  # 종목 코드 - 삼성전자
 
             # 최초 데이터 요청
@@ -91,3 +96,5 @@ class stock_day_collector:
                 ret = ReqeustData(objStockWeek)
                 if ret == False:
                     exit()
+            c.execute("DELETE FROM stock_pyun WHERE code = ?", (codenum,))
+            print(codenum,"추가 완료 : " , datetime.datetime.now)
