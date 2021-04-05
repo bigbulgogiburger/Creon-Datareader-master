@@ -48,7 +48,6 @@ def ReqeustData(obj):
 
         c2.execute("INSERT OR IGNORE INTO "+ obj.GetHeaderValue(0) +" VALUES( ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?)",
                   ((day,cur_pr,high_pr,low_pr,clo_pr,pr_diff,acc_vol,for_stor,for_stor_diff,for_perc,com_buy_vol,oot_cur_pr,oot_high_pr,oot_low_pr,oot_clo_pr,oot_pr_diff,oot_vol)))
-        print(day)
 
     return True
 
@@ -91,7 +90,7 @@ class stock_day_collector:
             NextCount = 1
             while objStockWeek.Continue:  # 연속 조회처리
                 NextCount += 1;
-                if (NextCount > 10000000):
+                if (NextCount > 100000000):
                     break
                 ret = ReqeustData(objStockWeek)
                 if ret == False:

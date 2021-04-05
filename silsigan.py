@@ -4,6 +4,7 @@ import sys
 from PyQt5.QtWidgets import *
 import win32com.client
 import sqlite3
+import time
 
 
 # 복수 종목 실시간 조회 샘플 (조회는 없고 실시간만 있음)
@@ -12,10 +13,9 @@ class CpEvent:
         self.client = client
 
     def OnReceived(self):
-        code = self.client.GetHeaderValue(0)  # 초
+        code = self.client.GetHeaderValue(0)  # 코드
         name = self.client.GetHeaderValue(1)  # 종목명
         diff = self.client.GetHeaderValue(2)  # 전일대비
-        time = self.client.GetHeaderValue(3)  # 시간
         cur_price = self.client.GetHeaderValue(4)  #시가
         high_price = self.client.GetHeaderValue(5)  # 고가
         low_price = self.client.GetHeaderValue(6)  # 저가
@@ -27,7 +27,8 @@ class CpEvent:
         acc_sell_deal_vol = self.client.GetHeaderValue(15)  # 누적매도체결수량(체결가방식)
         acc_buy_deal_vol = self.client.GetHeaderValue(16)  # 누적매수체결수량(체결가방식)
         moment_deal_vol = self.client.GetHeaderValue(17)  # 순간체결수량
-        time_sec= self.client.GetHeaderValue(18)  # 시간(초)
+        timess1 = time.strftime('%Y%m%d')
+        date_time_sec= timess1 + str(self.client.GetHeaderValue(18))  # 시간(초)
         exFlag = self.client.GetHeaderValue(19)  # 예상체결가구분플래그
         market_diff_flag = self.client.GetHeaderValue(20)  # 장구분플래그
 
@@ -35,20 +36,20 @@ class CpEvent:
         c = conn.cursor()
 
         c.execute("CREATE TABLE IF NOT EXISTS " + code +
-                  " (diff real, time integer, cur_price integer, high_price integer, low_price integer"
+                  " (diff real, cur_price integer, high_price integer, low_price integer"
                   ", sell_call integer, buy_call integer, acc_vol integer, pred_price integer, deal_state text, acc_sell_deal_vol integer"
-                  ", acc_buy_deal_vol,moment_deal_vol,time_sec integer, exFlag text, market_diff_flag text )")
+                  ", acc_buy_deal_vol integer , moment_deal_vol integer ,date_time_sec text, exFlag text, market_diff_flag text )")
         # sql문 실행 - 테이블 생성
         c.execute(
-            "INSERT OR IGNORE INTO " + code + " VALUES( ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-            ((diff,time,cur_price,high_price,low_price,sell_call,buy_call,acc_vol,pred_price,deal_state,acc_sell_deal_vol,acc_buy_deal_vol,moment_deal_vol,time_sec,exFlag,market_diff_flag)))
+            "INSERT OR IGNORE INTO " + code + " VALUES( ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            ((diff,cur_price,high_price,low_price,sell_call,buy_call,acc_vol,pred_price,deal_state,acc_sell_deal_vol,acc_buy_deal_vol,moment_deal_vol,date_time_sec,exFlag,market_diff_flag)))
 
 
         if (exFlag == ord('1')):  # 동시호가 시간 (예상체결)
-            print("실시간(예상체결)", code,name,diff,time,cur_price,high_price,low_price,sell_call,buy_call,acc_vol,pred_price,deal_state,acc_sell_deal_vol
+            print("실시간(예상체결)", code,name,diff,cur_price,high_price,low_price,sell_call,buy_call,acc_vol,pred_price,deal_state,acc_sell_deal_vol
                   ,acc_buy_deal_vol,moment_deal_vol,exFlag,market_diff_flag)
         elif (exFlag == ord('2')):  # 장중(체결)
-            print("실시간(장중 체결)", code,name,diff,time,cur_price,high_price,low_price,sell_call,buy_call,acc_vol,pred_price,deal_state,acc_sell_deal_vol
+            print("실시간(장중 체결)", code,name,diff,cur_price,high_price,low_price,sell_call,buy_call,acc_vol,pred_price,deal_state,acc_sell_deal_vol
                   ,acc_buy_deal_vol,moment_deal_vol,exFlag,market_diff_flag)
 
 
