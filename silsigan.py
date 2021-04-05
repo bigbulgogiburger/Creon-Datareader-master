@@ -5,7 +5,8 @@ from PyQt5.QtWidgets import *
 import win32com.client
 import sqlite3
 import time
-
+import pandas as pd
+import numpy as np
 
 # 복수 종목 실시간 조회 샘플 (조회는 없고 실시간만 있음)
 class CpEvent:
@@ -135,13 +136,9 @@ class silsigan:
         self.StopSubscribe();
 
         # 요청 종목 배열
-        codes = ["A003540", "A000660", "A005930", "A035420", "A069500", "Q530031"]
-        code= ["A003540"]
-        # 요청 필드 배열 - 종목코드, 시간, 대비부호 대비, 현재가, 거래량, 종목명
-        rqField = [0, 1, 2, 3, 4, 10, 17]  # 요청 필드
-        objMarkeyeye = CpMarketEye()
-        if (objMarkeyeye.Request(code, rqField) == False):
-            exit()
+
+        data = pd.read_csv('E:/big12/python-project/note/categories/제약기업선정.csv', encoding='utf-8')
+        codes = data['code'].tolist()
 
         cnt = len(codes)
         for i in range(cnt):
