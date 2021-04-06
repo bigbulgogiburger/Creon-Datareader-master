@@ -1,24 +1,37 @@
 import sys
 from PyQt5.QtWidgets import *
 import win32com.client
-
+import sqlite3
+import time
+import pandas as pd
 
 class CpEvent:
     instance = None
 
     def OnReceived(self):
-        # time = CpEvent.instance.GetHeaderValue(3)  # 시간
-        timess = CpEvent.instance.GetHeaderValue(18)  # 초
-        exFlag = CpEvent.instance.GetHeaderValue(19)  # 예상체결 플래그
-        cprice = CpEvent.instance.GetHeaderValue(13)  # 현재가
-        diff = CpEvent.instance.GetHeaderValue(2)  # 대비
-        cVol = CpEvent.instance.GetHeaderValue(17)  # 순간체결수량
-        vol = CpEvent.instance.GetHeaderValue(9)  # 거래량
+        code = self.client.GetHeaderValue(0)  # 코드
+        name = self.client.GetHeaderValue(1)  # 종목명
+        diff = self.client.GetHeaderValue(2)  # 전일대비
+        cur_price = self.client.GetHeaderValue(4)  # 시가
+        high_price = self.client.GetHeaderValue(5)  # 고가
+        low_price = self.client.GetHeaderValue(6)  # 저가
+        sell_call = self.client.GetHeaderValue(7)  # 매도호가
+        buy_call = self.client.GetHeaderValue(8)  # 매수호가
+        acc_vol = self.client.GetHeaderValue(9)  # 누적거래량
+        pred_price = self.client.GetHeaderValue(13)  # 현재가 또는 예상체결가
+        deal_state = self.client.GetHeaderValue(14)  # 체결상태(체결가 방식)
+        acc_sell_deal_vol = self.client.GetHeaderValue(15)  # 누적매도체결수량(체결가방식)
+        acc_buy_deal_vol = self.client.GetHeaderValue(16)  # 누적매수체결수량(체결가방식)
+        moment_deal_vol = self.client.GetHeaderValue(17)  # 순간체결수량
+        timess1 = time.strftime('%Y%m%d')
+        date_time_sec = timess1 + str(self.client.GetHeaderValue(18))  # 시간(초)
+        exFlag = self.client.GetHeaderValue(19)  # 예상체결가구분플래그
+        market_diff_flag = self.client.GetHeaderValue(20)  # 장구분플래그
 
-        if (exFlag == ord('1')):  # 동시호가 시간 (예상체결)
-            print("실시간(예상체결)", timess, "*", cprice, "대비", diff, "체결량", cVol, "거래량", vol)
-        elif (exFlag == ord('2')):  # 장중(체결)
-            print("실시간(장중 체결)", timess, cprice, "대비", diff, "체결량", cVol, "거래량", vol)
+        # if (exFlag == ord('1')):  # 동시호가 시간 (예상체결)
+        #     print("실시간(예상체결)", timess, "*", cprice, "대비", diff, "체결량", cVol, "거래량", vol)
+        # elif (exFlag == ord('2')):  # 장중(체결)
+        #     print("실시간(장중 체결)", timess, cprice, "대비", diff, "체결량", cVol, "거래량", vol)
 
 
 class CpStockCur:
@@ -101,16 +114,20 @@ class MyWindow(QMainWindow):
         self.isRq = False
 
     def btn1_clicked(self):
-        testCode = "A000660"
-        if (self.objStockMst.Request(testCode) == False):
-            exit()
+        data = pd.read_csv('E:/big12/python-project/note/categories/제약기업선정.csv', encoding='utf-8')
+        codes = data['code'].tolist()
+        print(codes)
+        for code in codes:
+            if (self.objStockMst.Request(code) == False):
+                exit()
 
         # 하이닉스 실시간 현재가 요청
-        self.objStockCur.Subscribe(testCode)
+        for code in codes:
+            self.objStockCur.Subscribe(code)
 
-        print("빼기빼기================-")
-        print("실시간 현재가 요청 시작")
-        self.isRq = True
+            print("빼기빼기================-")
+            print("실시간 현재가 요청 시작")
+            self.isRq = True
 
     def btn2_clicked(self):
         self.StopSubscribe()
