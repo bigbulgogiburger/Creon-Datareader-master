@@ -144,8 +144,9 @@ class MyWindow(QMainWindow):
         self.StopSubscribe();
 
         # 요청 종목 배열
-        data = pd.read_csv('E:/big12/python-project/note/categories/제약기업선정.csv', encoding='utf-8')
+        data = pd.read_csv('E:/big12/python-project/note/categories/기업선정.csv', encoding='utf-8')
         codes = data['code'].tolist()
+        print(codes)
         # 요청 필드 배열 - 종목코드, 시간, 대비부호 대비, 현재가, 거래량, 종목명
         rqField = [0,1,2,3,4,5,6,7,8,9,13,14,15,16,17,18,19,20]  # 요청 필드
         objMarkeyeye = CpMarketEye()
