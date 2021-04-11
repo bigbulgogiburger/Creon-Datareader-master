@@ -15,7 +15,7 @@ def ReqeustData(obj):
     if rqStatus != 0:
         return False
     ## 현재 받은 리스트 로드하기
-    connn = sqlite3.connect("stock_list_added .db", isolation_level=None)
+    connn = sqlite3.connect("stock_db(day)_2401~_dh.db", isolation_level=None)
     c2 = connn.cursor()
     # DB 연결
     print(obj.GetHeaderValue(0))
@@ -87,13 +87,14 @@ class stock_day_collector:
 
             # 연속 데이터 요청
             # 예제는 10000000번만 연속 통신 하도록 함.
+            # 해당 while문을 지우면 중복하는 데이터를 받지 않는다.(최신 36일치만 받음)
             NextCount = 1
-            while objStockWeek.Continue:  # 연속 조회처리
-                NextCount += 1;
-                if (NextCount > 100000000):
-                    break
-                ret = ReqeustData(objStockWeek)
-                if ret == False:
-                    exit()
-            c.execute("DELETE FROM stock_pyun WHERE code = ?", (codenum,))
-            print(codenum,"추가 완료 : " , datetime.datetime.now)
+            # while objStockWeek.Continue:  # 연속 조회처리
+            #     NextCount += 1;
+            #     if (NextCount > 100000000):
+            #         break
+            #     ret = ReqeustData(objStockWeek)
+            #     if ret == False:
+            #         exit()
+            # c.execute("DELETE FROM stock_pyun WHERE code = ?", (codenum,))
+            # print(codenum,"추가 완료 : " , datetime.datetime.now)
